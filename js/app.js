@@ -1,7 +1,17 @@
 /*
  * Create a list that holds all of your cards
  */
-
+const cardSingleValues = [
+  'fa-diamond',
+  'fa-paper-plane-o',
+  'fa-anchor',
+  'fa-bolt',
+  'fa-cube',
+  'fa-leaf',
+  'fa-bicycle',
+  'fa-bomb'
+];
+const CardValues = [...cardSingleValues, ...cardSingleValues];
 
 /*
  * Display the cards on the page
@@ -11,20 +21,37 @@
  */
 
 // Shuffle function from http://stackoverflow.com/a/2450976
-function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+const shuffle = array => {
+  var currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
 
-    while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
 
-    return array;
-}
+  return array;
+};
 
+const initNewGame = () => {
+  const shuffledCards = shuffle(CardValues);
+  console.log(shuffledCards);
+  let shuffledHTMLCards = '';
+  shuffledCards.map(cardValue => {
+    shuffledHTMLCards +=
+      '<li class="card"><i class="fa ' + cardValue + '"></i></li>';
+  });
+  document.getElementsByClassName('deck')[0].innerHTML = shuffledHTMLCards;
+};
+
+// Restart button
+document
+  .getElementsByClassName('restart')[0]
+  .addEventListener('click', () => initNewGame());
 
 /*
  * set up the event listener for a card. If a card is clicked:
