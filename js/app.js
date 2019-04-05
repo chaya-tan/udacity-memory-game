@@ -12,7 +12,14 @@ const cardSingleValues = [
   'fa-bomb'
 ];
 const CardValues = [...cardSingleValues, ...cardSingleValues];
-let cardStatus = Array(16).fill(0);
+const initStarsHtml = document.getElementsByClassName('stars')[0].innerHTML;
+let timeInterval = '';
+let moveCount = 0;
+let scoreCount = 0; //won when score reaches 8
+let starCount = 3;
+let matchingCardCount = 0;
+let firstCardClass = '';
+let firstCardId = '';
 
 /*
  * Display the cards on the page
@@ -38,15 +45,94 @@ const shuffle = array => {
   return array;
 };
 
+const removeOpenClass = (id1, id2) => {
+  document.getElementById(id1).classList.remove('open');
+  document.getElementById(id2).classList.remove('open');
+};
+
+const addWrongCardColor = (id1, id2) => {
+  document.getElementById(id1).classList.add('wrong');
+  document.getElementById(id2).classList.add('wrong');
+};
+
+const removeWrongCardColor = (id1, id2) => {
+  document.getElementById(id1).classList.remove('wrong');
+  document.getElementById(id2).classList.remove('wrong');
+};
+
+const reduceStar = starIndex => {
+  const starList = document.getElementsByClassName('stars')[0].children;
+  starList[starIndex].children[0].classList.remove('fa-star');
+  starList[starIndex].children[0].classList.add('fa-star-o');
+};
+
+const resetStar = () => {
+  document.getElementsByClassName('stars')[0].innerHTML = initStarsHtml;
+};
+
+const timePassed = startTime => {
+  const now = new Date();
+  const secPassed = Math.floor((now - startTime) / 1000);
+  const min = Math.floor(secPassed / 60);
+  const sec = secPassed % 60 < 10 ? '0' + (secPassed % 60) : secPassed % 60;
+  console.log('min', min, 'sec', sec);
+  document.getElementById('timer').innerText = min + ':' + sec;
+};
+
+const timerStart = () => {
+  const start = new Date();
+  return setInterval(timePassed, 1000, start);
+};
+
 const cardClicked = e => {
-  console.log('clicked', e);
   if (e.target.nodeName === 'LI') {
-    console.log('id', e.target.id);
+    if (moveCount === 0) {
+      timeInterval = timerStart();
+    }
+    moveCount++;
+    document.getElementById('moves').innerText = moveCount;
+    if (moveCount === 20 || moveCount === 30) {
+      starCount--;
+      reduceStar(starCount);
+    }
+
     const cardId = e.target.id;
-    if (cardStatus[cardId] === 0) {
-      cardStatus[cardId] = 1;
-      document.getElementById(cardId).classList.add('match');
-      console.log(cardStatus);
+    const cardElement = document.getElementById(cardId);
+
+    // if the card is unclicked && matching card count is 0 or 1 --> open
+    if (
+      !cardElement.classList.contains('match') &&
+      !cardElement.classList.contains('open') &&
+      matchingCardCount < 2
+    ) {
+      matchingCardCount++;
+      cardElement.classList.add('open');
+
+      //if it is the first card, store in firstCardClass
+      if (matchingCardCount === 1) {
+        firstCardClass = cardElement.childNodes[0].classList[1];
+        firstCardId = cardId;
+      }
+
+      //if it is the second card, check match and restore matchingCardCount to 0
+      if (matchingCardCount === 2) {
+        if (firstCardClass === cardElement.childNodes[0].classList[1]) {
+          //if match
+          removeOpenClass(cardId, firstCardId);
+          cardElement.classList.add('match');
+          document.getElementById(firstCardId).classList.add('match');
+          scoreCount++;
+        } else {
+          //not match
+          addWrongCardColor(firstCardId, cardId);
+          setTimeout(removeWrongCardColor, 1000, firstCardId, cardId);
+          setTimeout(removeOpenClass, 1000, firstCardId, cardId);
+        }
+
+        matchingCardCount = 0;
+        firstCardClass = '';
+        firstCardId = '';
+      }
     }
   }
 };
@@ -65,11 +151,16 @@ const initNewGame = () => {
       '"></i></li>';
     cardNum++;
   });
-  document.getElementsByClassName('deck')[0].innerHTML = shuffledHTMLCards;
-  document
-    .getElementsByClassName('deck')[0]
-    .addEventListener('click', cardClicked);
-  cardStatus = Array(16).fill(0);
+  const deckElement = document.getElementsByClassName('deck')[0];
+  deckElement.innerHTML = shuffledHTMLCards;
+  deckElement.addEventListener('click', cardClicked);
+  moveCount = 0;
+  starCount = 3;
+
+  resetStar();
+  clearInterval(timeInterval);
+  document.getElementById('timer').innerText = '0:00';
+  document.getElementById('moves').innerText = moveCount;
 };
 
 initNewGame();
