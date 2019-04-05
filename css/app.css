@@ -114,10 +114,6 @@ h1 {
   }
 }
 
-/* .deck .card.show {
-    font-size: 33px;
-} */
-
 .deck .card.match {
   cursor: default;
   background: #02ccba;
@@ -153,4 +149,32 @@ h1 {
 
 #timer {
   margin-left: 10%;
+}
+
+/* Modal */
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.modal {
+  z-index: 101;
+  background-color: #fff;
+  color: #333;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s, visibility 0s 0.5s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s;
 }

@@ -70,18 +70,17 @@ const resetStar = () => {
   document.getElementsByClassName('stars')[0].innerHTML = initStarsHtml;
 };
 
-const timePassed = startTime => {
+const updateTimePassed = startTime => {
   const now = new Date();
   const secPassed = Math.floor((now - startTime) / 1000);
   const min = Math.floor(secPassed / 60);
   const sec = secPassed % 60 < 10 ? '0' + (secPassed % 60) : secPassed % 60;
-  console.log('min', min, 'sec', sec);
   document.getElementById('timer').innerText = min + ':' + sec;
 };
 
 const timerStart = () => {
-  const start = new Date();
-  return setInterval(timePassed, 1000, start);
+  const startTime = new Date();
+  return setInterval(updateTimePassed, 1000, startTime);
 };
 
 const cardClicked = e => {
@@ -122,6 +121,13 @@ const cardClicked = e => {
           cardElement.classList.add('match');
           document.getElementById(firstCardId).classList.add('match');
           scoreCount++;
+          if (scoreCount === 8) {
+            document.getElementById(
+              'time-used'
+            ).innerText = document.getElementById('timer').innerText;
+            document.getElementById('star-rating').innerText = starCount;
+            document.getElementsByClassName('modal')[0].classList.add('active');
+          }
         } else {
           //not match
           addWrongCardColor(firstCardId, cardId);
@@ -163,12 +169,22 @@ const initNewGame = () => {
   document.getElementById('moves').innerText = moveCount;
 };
 
+const playAgain = () => {
+  initNewGame();
+  document.getElementsByClassName('modal')[0].classList.remove('active');
+};
+
 initNewGame();
 
 // Restart button
 document
   .getElementsByClassName('restart')[0]
   .addEventListener('click', () => initNewGame());
+
+//play again button
+document
+  .getElementById('play-again')
+  .addEventListener('click', () => playAgain());
 
 /*
  * set up the event listener for a card. If a card is clicked:
