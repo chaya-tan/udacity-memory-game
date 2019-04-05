@@ -12,6 +12,7 @@ const cardSingleValues = [
   'fa-bomb'
 ];
 const CardValues = [...cardSingleValues, ...cardSingleValues];
+let cardStatus = Array(16).fill(0);
 
 /*
  * Display the cards on the page
@@ -37,16 +38,41 @@ const shuffle = array => {
   return array;
 };
 
+const cardClicked = e => {
+  console.log('clicked', e);
+  if (e.target.nodeName === 'LI') {
+    console.log('id', e.target.id);
+    const cardId = e.target.id;
+    if (cardStatus[cardId] === 0) {
+      cardStatus[cardId] = 1;
+      document.getElementById(cardId).classList.add('match');
+      console.log(cardStatus);
+    }
+  }
+};
+
 const initNewGame = () => {
   const shuffledCards = shuffle(CardValues);
   console.log(shuffledCards);
   let shuffledHTMLCards = '';
+  let cardNum = 0;
   shuffledCards.map(cardValue => {
     shuffledHTMLCards +=
-      '<li class="card"><i class="fa ' + cardValue + '"></i></li>';
+      '<li class="card" id="' +
+      cardNum +
+      '"><i class="fa ' +
+      cardValue +
+      '"></i></li>';
+    cardNum++;
   });
   document.getElementsByClassName('deck')[0].innerHTML = shuffledHTMLCards;
+  document
+    .getElementsByClassName('deck')[0]
+    .addEventListener('click', cardClicked);
+  cardStatus = Array(16).fill(0);
 };
+
+initNewGame();
 
 // Restart button
 document
