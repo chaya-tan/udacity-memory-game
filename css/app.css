@@ -178,3 +178,14 @@ h1 {
   visibility: visible;
   transition: opacity 0.5s;
 }
+
+/* button */
+#play-again {
+  background: #80f421;
+  width: 20vw;
+  height: 4vh;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: 1.5vh;
+}
